@@ -1,71 +1,71 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const slugify = require("slugify");
 
 const BootcampSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'Please add a name'],
+        required: [true, "Please add a name"],
         unique: true,
         trim: true,
-        maxlength: [50, 'Name can not be more than 50 characters']
+        maxlength: [50, "Name can not be more than 50 characters"],
     },
     slug: String,
     description: {
         type: String,
-        required: [true, 'Please add a description '],
+        required: [true, "Please add a description "],
 
-        maxlength: [500, 'Name can not be more than 500 characters']
+        maxlength: [500, "Name can not be more than 500 characters"],
     },
     website: {
         type: String,
         match: [
             /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
-            'Please use valid url with http or https'
-        ]
+            "Please use valid url with http or https",
+        ],
     },
     phone: {
         type: String,
-        maxlength: [20, 'Phone number can not be longer than 20']
+        maxlength: [20, "Phone number can not be longer than 20"],
     },
     email: {
         type: String,
         match: [
             /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-            'Please enter valid email'
-        ]
+            "Please enter valid email",
+        ],
     },
-    // address: {
-    //     type: String,
-    //     required: [true, 'Please add an address']
-    // },
+    address: {
+        type: String,
+        required: [true, 'Please add an address']
+    },
     location: {
         type: {
             type: String,
-            enum: ['Point'],
-
+            enum: ["Point"],
         },
         coordinates: {
             type: [Number],
 
-            index: '2dsphere'
+            index: "2dsphere",
         },
         formattedAddress: String,
         street: String,
         city: String,
         state: String,
         zipcode: String,
-        country: String
+        country: String,
     },
     careers: {
         type: [String],
         required: true,
         enum: [
-            'web Development',
-            'Mobile App Development',
-            'UI/UX',
-            'Data Science',
-            'Business',
-            'Other'
-        ]
+            "web Development",
+            "Mobile App Development",
+            "UI/UX",
+            "Data Science",
+            "Business",
+            "Other",
+        ],
     },
     // averageRating: {
     //     type: Number,
@@ -79,24 +79,32 @@ const BootcampSchema = new mongoose.Schema({
     // },
     housing: {
         type: Boolean,
-        default: false
+        default: false,
     },
     jobAssistance: {
         type: Boolean,
-        default: false
+        default: false,
     },
     jobGurantee: {
         type: Boolean,
-        default: false
+        default: false,
     },
     acceptGi: {
         type: Boolean,
-        default: false
+        default: false,
     },
     createdAt: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     },
-})
+});
 
-module.exports = mongoose.model('Bootcamp', BootcampSchema)
+//create bootcamp slug from name
+BootcampSchema.pre("save", function (next) {
+    this.slug = slugify(this.name, {
+        lower: true
+    });
+    next();
+});
+
+module.exports = mongoose.model("Bootcamp", BootcampSchema);
