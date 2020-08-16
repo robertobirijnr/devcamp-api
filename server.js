@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const morgan = require("morgan");
 const connectDb = require("./config/db");
 const colors = require("colors");
+const bodyParser = require('body-parser')
 
 dotenv.config({
   path: "./config/config.env",
@@ -17,6 +18,12 @@ const app = express();
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+app.use(bodyParser.urlencoded({
+  extended: false
+}))
+
+// parse application/json
+app.use(bodyParser.json())
 //import route files
 const bootcamps = require("./Routes/bootCamp");
 
