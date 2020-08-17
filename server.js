@@ -27,9 +27,11 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json())
 //import route files
 const bootcamps = require("./Routes/bootCamp");
+const courses = require("./Routes/course");
 
 //mount routers
 app.use("/api/v1/bootcamps", bootcamps);
+app.use("/api/v1/courses", courses);
 
 
 app.use(errorHandler);
