@@ -5,6 +5,7 @@ const connectDb = require("./config/db");
 const colors = require("colors");
 const bodyParser = require('body-parser');
 const errorHandler = require('./middleware/error')
+const fileupload = require('express-fileupload')
 
 dotenv.config({
   path: "./config/config.env",
@@ -25,6 +26,7 @@ app.use(bodyParser.urlencoded({
 
 // parse application/json
 app.use(bodyParser.json())
+app.use(fileupload())
 //import route files
 const bootcamps = require("./Routes/bootCamp");
 const courses = require("./Routes/course");
