@@ -30,10 +30,12 @@ app.use(fileupload())
 //import route files
 const bootcamps = require("./Routes/bootCamp");
 const courses = require("./Routes/course");
+const Authentication = require("./Routes/Auth");
 
 //mount routers
 app.use("/api/v1/bootcamps", bootcamps);
 app.use("/api/v1/courses", courses);
+app.use("/api/v1/auth", Authentication);
 
 
 app.use(errorHandler);
