@@ -18,7 +18,7 @@ exports.register = asyncHandler(async (req, res, next) => {
         role
     })
 
-   sendTokenResponse(user,200,res)
+    sendTokenResponse(user, 200, res)
 })
 
 exports.login = asyncHandler(async (req, res, next) => {
@@ -48,7 +48,7 @@ exports.login = asyncHandler(async (req, res, next) => {
         return next(new ErrorResponse('Invalid credentials', 401))
     }
 
-    sendTokenResponse(user,200, res)
+    sendTokenResponse(user, 200, res)
 
     res.status(200).json({
         success: true,
@@ -57,24 +57,33 @@ exports.login = asyncHandler(async (req, res, next) => {
 })
 
 //get token from model, create cookie and send respond
-const sendTokenResponse = (user,statusCode,res)=>{
+const sendTokenResponse = (user, statusCode, res) => {
     const token = user.getSignJWTtoken();
 
     const options = {
-        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 *60 * 1000),
-        httpOnly:true
+        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
+        httpOnly: true
     };
 
-    if(process.env.NODE_ENV === 'production'){
-        options.secure=true
+    if (process.env.NODE_ENV === 'production') {
+        options.secure = true
     }
 
     res
-    .status(statusCode)
-    .cookie('token',token,options)
-    .json({
-        success:true,
-        token
-    })
+        .status(statusCode)
+        .cookie('token', token, options)
+        .json({
+            success: true,
+            token
+        })
 }
 
+//get current login user
+exports.getMe = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.user.id)
+
+    res.status(200).json({
+        success: true,
+        data: user
+    })
+})
