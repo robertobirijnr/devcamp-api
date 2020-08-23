@@ -1,84 +1,81 @@
-const advanceResults = (model, populate) => async (req, res, next) => {
-
+const advancedResults = (model, populate) => async (req, res, next) => {
     let query;
 
-    // copy req.query
+    // Copy req.query
     const reqQuery = {
         ...req.query
     };
 
-    //fields to exclude
-    const removeField = ['select,sort,page,limit'];
+    // Fields to exclude
+    const removeFields = ['select', 'sort', 'page', 'limit'];
 
+    // Loop over removeFields and delete them from reqQuery
+    removeFields.forEach(param => delete reqQuery[param]);
 
-    //loop over removefields and delete them from reqQuery
-    removeField.forEach(param => delete reqQuery[param]);
+    // Create query string
+    let queryStr = JSON.stringify(reqQuery);
 
-    //create query string
-    let queryStr = JSON.stringify(req.query);
+    // Create operators ($gt, $gte, etc)
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
 
-    //create operators ($gt,$gte etc)
-    queryStr = queryStr.replace(
-        /\b(gt|gte|lt|lte|in)\b/g,
-        (match) => `$${match}`
-    );
-
-    //Finding resources
+    // Finding resource
     query = model.find(JSON.parse(queryStr));
 
-    //Select fields
+    // Select Fields
     if (req.query.select) {
         const fields = req.query.select.split(',').join(' ');
         query = query.select(fields);
     }
 
-    //sort
+    // Sort
     if (req.query.sort) {
         const sortBy = req.query.sort.split(',').join(' ');
         query = query.sort(sortBy);
     } else {
-        query = query.sort('-createdAt')
+        query = query.sort('-createdAt');
     }
 
-    //pagination
-    const page = parseInt(req, query.page, 10) || 1;
+    // Pagination
+    const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 25;
     const startIndex = (page - 1) * limit;
-    const endIndex = page * limit
-    const total = await model.countDocuments();
+    const endIndex = page * limit;
+    const total = await model.countDocuments(JSON.parse(queryStr));
 
     query = query.skip(startIndex).limit(limit);
 
     if (populate) {
-        query = query.populate(populate)
+        query = query.populate(populate);
     }
 
-    //Executing query
+    // Executing query
     const results = await query;
 
-    //pagination results
-    const pagination = {}
+    // Pagination result
+    const pagination = {};
+
     if (endIndex < total) {
         pagination.next = {
             page: page + 1,
             limit
-        }
+        };
     }
 
     if (startIndex > 0) {
         pagination.prev = {
             page: page - 1,
             limit
-        }
+        };
     }
-    res.advanceResults = {
-        succsess: true,
+
+    res.advancedResults = {
+        success: true,
         count: results.length,
         pagination,
         data: results
-    }
+    };
 
-    next()
-}
+    next();
+};
 
-module.exports = advanceResults;
+module.exports = advancedResults;
