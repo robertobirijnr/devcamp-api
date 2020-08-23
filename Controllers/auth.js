@@ -135,6 +135,23 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
     sendTokenResponse(user, 200, res)
 });
 
+exports.updateProfile = asyncHandler(async (req, res, next) => {
+    const fieldsToUpdate = {
+        name: req.body.name,
+        email: req.body.email
+    }
+
+    const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
+        new: true,
+        runValidators: true
+    })
+
+    res.status(200).json({
+        success: true,
+        data: user
+    })
+})
+
 //get token from model, create cookie and send respond
 const sendTokenResponse = (user, statusCode, res) => {
     const token = user.getSignJWTtoken();
