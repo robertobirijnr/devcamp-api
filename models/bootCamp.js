@@ -10,6 +10,11 @@ const BootcampSchema = new mongoose.Schema({
         trim: true,
         maxlength: [50, "Name can not be more than 50 characters"],
     },
+    user: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+        required: true
+    },
     slug: String,
     description: {
         type: String,
