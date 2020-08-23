@@ -3,6 +3,9 @@ const asyncHandler = require("../middleware/asyncAwait");
 const User = require("../models/user");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
+const {
+    match
+} = require("assert");
 
 exports.register = asyncHandler(async (req, res, next) => {
     const {
@@ -150,6 +153,21 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
         success: true,
         data: user
     })
+})
+
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.user.id).select('+password');
+
+    //check current password
+
+    if (!(await user.matchPassword(req.body.currentPassword))) {
+        return next(new ErrorResponse('Password is incorrect', 401))
+    }
+
+    user.password = req.body.newPassword;
+    await user.save();
+
+    sendTokenResponse(user, 200, res)
 })
 
 //get token from model, create cookie and send respond

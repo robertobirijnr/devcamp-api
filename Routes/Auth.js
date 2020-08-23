@@ -8,7 +8,8 @@
      getMe,
      forgotPassword,
      resetPassword,
-     updateProfile
+     updateProfile,
+     updatePassword
  } = require('../Controllers/auth');
 
  const router = express.Router()
@@ -17,6 +18,7 @@
  router.route('/login').post(login)
  router.route('/me').get(protect, getMe)
  router.route('/updateprofile').put(protect, updateProfile)
+ router.route('/updatepassword').put(protect, updatePassword)
  router.post('/forgotpassword', forgotPassword)
  router.put('/resetpassword/:resettoken', resetPassword)
 
