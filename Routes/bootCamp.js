@@ -20,6 +20,7 @@ const {
 
 //include other resource routers
 const courseRouter = require('./course')
+const reviewRouter = require('./Review')
 
 const router = express.Router();
 
@@ -30,6 +31,7 @@ router
 
 //Re-route into other resource routers
 router.use('/:bootcampId/courses', courseRouter)
+router.use('/:bootcampId/reviews', reviewRouter)
 
 router.route('/radius/:zipcode/:distance')
   .get(getBootcampsInRadius)

@@ -3,14 +3,9 @@ const Bootcamp = require("../models/bootCamp");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/asyncAwait");
 const geocoder = require("../utils/geocoder");
-const {
-    Query
-} = require("mongoose");
 
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
-
-
-    res.status(200).json(res.advanceResults);
+    res.status(200).json(res.advancedResults);
 });
 
 
