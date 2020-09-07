@@ -43,5 +43,43 @@ ReviewSchame.index({
     unique: true
 });
 
+//calculate average cost of course
+
+ReviewSchame.statics.getAverageRating = async function (bootcampId) {
+    // console.log('calculate avg cost...'.bue)
+
+    const obj = await this.aggregate([{
+            $match: {
+                bootcamp: bootcampId
+            }
+        },
+        {
+            $group: {
+                _id: '$bootcamp',
+                averageRating: {
+                    $avg: '$rating'
+                }
+            }
+        }
+    ])
+    try {
+        await this.model('Bootcamp').findByIdAndUpdate(bootcampId, {
+            averageRating: (obj[0].averageRating / 10) * 10
+        })
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+//call getAverageCost after save
+ReviewSchame.post('save', function () {
+    this.constructor.getAverageRating(this.bootcamp)
+})
+
+ReviewSchame.pre('remove', function () {
+    this.constructor.getAverageRating(this.bootcamp)
+})
+
+
 
 module.exports = mongoose.model('Review', ReviewSchame)
